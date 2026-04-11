@@ -152,24 +152,30 @@ function render() {
 
   root.innerHTML = `
     <div class="shell">
-      <header class="hero">
+      <header class="hero panel">
         <div>
           <p class="eyebrow">StormSim Scenario Player</p>
           <h1>${escapeHtml(scenario.title)}</h1>
+          <p class="hero-subtitle">Field inspection simulation with branching dialogue, evidence capture, documentation, and audit review.</p>
           <div class="hero-meta">
             <span class="pill">${escapeHtml(scenario.difficulty)}</span>
             <span class="pill">${scenario.estimated_minutes} minutes</span>
             <span class="pill">${escapeHtml(getNodeBadgeLabel(node))}</span>
           </div>
         </div>
-        <button class="secondary-button" data-action="reset" type="button">Restart Scenario</button>
+        <div class="hero-actions">
+          <button class="secondary-button" data-action="reset" type="button">Restart Scenario</button>
+        </div>
       </header>
 
       <main class="layout">
         <section class="panel main-card">
           ${imageSrc ? `<img class="node-image" src="${escapeHtml(imageSrc)}" alt="${escapeHtml(node.prompt)}">` : ""}
           <div class="node-body">
-            <p class="node-kicker">${escapeHtml(node.node_type.replace("_", " "))}</p>
+            <div class="section-label-row">
+              <p class="node-kicker">${escapeHtml(node.node_type.replace("_", " "))}</p>
+              <span class="step-pill">${escapeHtml(getNodeBadgeLabel(node))}</span>
+            </div>
             ${renderNodeHeadline(node)}
             <p class="context">${escapeHtml(node.context)}</p>
             ${appState.flash ? renderFlash(appState.flash) : ""}
@@ -249,16 +255,23 @@ function render() {
 
 function renderStandardNode(node) {
   return `
-    <div class="choice-list">
+    <section class="stack">
+      <div class="action-header">
+        <div class="action-title">Choose your next move</div>
+        <div class="small">Each response affects score, evidence, and the final audit.</div>
+      </div>
+      <div class="choice-list">
       ${(node.choices ?? [])
         .map(
           (choice) => `
             <button class="choice-button" data-action="choice" data-choice-id="${escapeHtml(choice.choice_id)}" type="button">
-              ${escapeHtml(choice.text)}
+              <span class="choice-text">${escapeHtml(choice.text)}</span>
+              <span class="choice-arrow">Continue</span>
             </button>`,
         )
         .join("")}
-    </div>
+      </div>
+    </section>
   `;
 }
 
