@@ -161,7 +161,7 @@ function render() {
           <div class="hero-meta">
             <span class="pill">${escapeHtml(scenario.difficulty)}</span>
             <span class="pill">${scenario.estimated_minutes} minutes</span>
-            <span class="pill">${escapeHtml(node.node_id)}</span>
+            <span class="pill">${escapeHtml(getNodeBadgeLabel(node))}</span>
           </div>
         </div>
         <button class="secondary-button" data-action="reset" type="button">Restart Scenario</button>
@@ -210,8 +210,8 @@ function render() {
                       .map(
                         (item) => `
                           <div class="stat">
-                            <strong>${escapeHtml(item.label ?? item.evidence_id)}</strong>
-                            <div class="small">${escapeHtml(item.evidence_id)}</div>
+                            <strong>${escapeHtml(getEvidenceDisplayLabel(item))}</strong>
+                            <div class="small">${escapeHtml(getEvidenceMeta(item))}</div>
                           </div>`,
                       )
                       .join("")
@@ -229,7 +229,7 @@ function render() {
                       .map(
                         (tag) => `
                           <div class="stat">
-                            <strong>${escapeHtml(tag)}</strong>
+                            <strong>${escapeHtml(humanizeToken(tag))}</strong>
                             <div class="small">${escapeHtml(scenario.behavior_tag_definitions?.[tag] ?? "Tracked by runtime state.")}</div>
                           </div>`,
                       )
@@ -241,7 +241,7 @@ function render() {
 
           <section>
             <h3>Visited Nodes</h3>
-            <div class="small">${escapeHtml(runtime.visited_nodes.join(" -> "))}</div>
+            <div class="small">${escapeHtml(runtime.visited_nodes.map((nodeId) => getVisitedNodeLabel(scenario, nodeId)).join(" -> "))}</div>
           </section>
         </aside>
       </main>
@@ -380,7 +380,7 @@ function renderAuditNode(runtime, audit) {
           ${
             audit.missedEvidenceIds.length
               ? audit.missedEvidenceIds
-                  .map((item) => `<div class="stat">${escapeHtml(item)}</div>`)
+                  .map((item) => `<div class="stat">${escapeHtml(getEvidenceCatalogLabel(appState.scenario, item))}</div>`)
                   .join("")
               : `<div class="empty">No required evidence was missed.</div>`
           }
@@ -410,6 +410,80 @@ function getNodeImageSrc(scenario, node) {
   const imageName = rawSrc.split("/").pop();
   const resolvedName = IMAGE_ALIASES[imageName] ?? imageName;
   return `./${resolvedName}`;
+}
+
+function getNodeBadgeLabel(node) {
+  if (node.node_type === "audit_result") {
+    return "Final audit";
+  }
+
+  if (node.node_type === "documentation") {
+    return "Documentation step";
+  }
+
+  return humanizeNodeId(node.node_id);
+}
+
+function getVisitedNodeLabel(scenario, nodeId) {
+  const node = getNodeById(scenario, nodeId);
+  if (!node) {
+    return humanizeNodeId(nodeId);
+  }
+
+  if (node.node_type === "audit_result") {
+    return nodeId === "N_fail_passive" ? "Inspection failed" : "Final audit";
+  }
+
+  if (node.node_type === "documentation") {
+    return "Documentation";
+  }
+
+  return humanizeNodeId(node.node_id);
+}
+
+function getEvidenceCatalogLabel(scenario, evidenceId) {
+  const match = scenario.evidence_catalog?.find((item) => item.evidence_id === evidenceId);
+  return match?.label ?? humanizeToken(evidenceId.replace(/^evidence_/, ""));
+}
+
+function getEvidenceDisplayLabel(item) {
+  return item.label ?? humanizeToken(item.evidence_id.replace(/^evidence_/, ""));
+}
+
+function getEvidenceMeta(item) {
+  const parts = [];
+
+  if (item.severity) {
+    parts.push(`${humanizeToken(item.severity)} severity`);
+  }
+
+  if (item.type) {
+    parts.push(humanizeToken(item.type));
+  }
+
+  return parts.join(" • ") || "Inspection evidence";
+}
+
+function humanizeNodeId(nodeId) {
+  return nodeId
+    .replace(/^N\d+[a-z]?_?/i, "")
+    .replace(/^N_/, "")
+    .replace(/_/g, " ")
+    .replace(/\bdoc\b/gi, "documentation")
+    .replace(/\baudit\b/gi, "audit")
+    .replace(/\bentry tense\b/gi, "tense entry")
+    .replace(/\bfloor\b/gi, "shop floor")
+    .replace(/\bhidden\b/gi, "hidden storage")
+    .replace(/\bviolation\b/gi, "drain violation")
+    .replace(/\bpassive\b/gi, "failed")
+    .replace(/\b\w/g, (char) => char.toUpperCase())
+    .trim();
+}
+
+function humanizeToken(value) {
+  return value
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
 function escapeHtml(value) {
