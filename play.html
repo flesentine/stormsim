@@ -4,35 +4,41 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>StormSim Scenario Player</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
       :root {
-        --bg: #eef2ee;
-        --panel: rgba(255, 255, 255, 0.82);
-        --panel-strong: #ffffff;
-        --line: rgba(31, 49, 45, 0.1);
-        --ink: #1c2725;
-        --muted: #667674;
-        --accent: #185b63;
-        --accent-soft: #e3f0ef;
-        --accent-strong: #0f444a;
+        --bg: #f4efe6;
+        --surface: #fffaf2;
+        --panel: rgba(255, 250, 242, 0.88);
+        --panel-strong: #fffdf9;
+        --line: rgba(71, 57, 34, 0.12);
+        --ink: #1e2321;
+        --muted: #6f756e;
+        --accent: #0f5a63;
+        --accent-soft: #dff0ef;
+        --accent-strong: #093c42;
+        --accent-dark: #12353a;
+        --chip: #f4ebdc;
         --warn: #8a5a00;
         --warn-soft: #fff3d6;
         --ok: #1f6a43;
         --ok-soft: #dff4e8;
-        --shadow: 0 18px 60px rgba(19, 39, 37, 0.08);
+        --shadow: 0 30px 80px rgba(35, 28, 19, 0.08);
       }
       * { box-sizing: border-box; }
       body {
         margin: 0;
-        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         text-rendering: optimizeLegibility;
         color: var(--ink);
         background:
-          radial-gradient(circle at top left, rgba(24, 91, 99, 0.08), transparent 26%),
-          radial-gradient(circle at top right, rgba(24, 91, 99, 0.08), transparent 24%),
-          linear-gradient(180deg, #f8fbf7 0%, var(--bg) 100%);
+          radial-gradient(circle at 10% 10%, rgba(15, 90, 99, 0.08), transparent 22%),
+          radial-gradient(circle at 90% 0%, rgba(188, 153, 89, 0.10), transparent 20%),
+          linear-gradient(180deg, #fbf7ef 0%, var(--bg) 100%);
       }
       button,
       select,
@@ -42,38 +48,41 @@
       .shell {
         max-width: 1240px;
         margin: 0 auto;
-        padding: 28px 24px 40px;
+        padding: 18px 24px 48px;
       }
       .hero {
-        display: flex;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
         gap: 20px;
-        align-items: center;
-        margin-bottom: 24px;
-        padding: 22px 24px;
-        backdrop-filter: blur(16px);
+        align-items: start;
+        margin-bottom: 22px;
+        padding: 18px 20px;
+        background:
+          linear-gradient(135deg, rgba(255,255,255,0.72), rgba(255,250,242,0.92));
       }
       .eyebrow {
         margin: 0 0 8px;
         text-transform: uppercase;
         letter-spacing: 0.14em;
-        font-size: 12px;
+        font-size: 11px;
+        font-weight: 700;
         color: var(--muted);
       }
       h1 {
         margin: 0;
-        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-        font-size: clamp(28px, 4.5vw, 40px);
-        line-height: 1.05;
-        letter-spacing: -0.04em;
-        font-weight: 750;
+        font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+        font-size: clamp(26px, 3.2vw, 34px);
+        line-height: 1.02;
+        letter-spacing: -0.05em;
+        font-weight: 800;
+        max-width: 720px;
       }
       h2 {
         margin: 0 0 14px;
-        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-        font-size: clamp(22px, 3vw, 30px);
+        font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+        font-size: clamp(20px, 2.2vw, 28px);
         line-height: 1.12;
-        letter-spacing: -0.03em;
+        letter-spacing: -0.04em;
         font-weight: 700;
       }
       blockquote {
@@ -90,13 +99,13 @@
       .hero-subtitle {
         margin: 8px 0 0;
         color: var(--muted);
-        font-size: 15px;
+        font-size: 14px;
         line-height: 1.5;
-        max-width: 720px;
+        max-width: 640px;
       }
       .hero-meta {
         display: flex;
-        gap: 10px;
+        gap: 8px;
         flex-wrap: wrap;
         margin-top: 14px;
       }
@@ -107,43 +116,45 @@
       .pill {
         padding: 9px 13px;
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.7);
+        background: var(--chip);
         border: 1px solid var(--line);
-        font-size: 13px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
         color: var(--ink);
       }
       .layout {
         display: grid;
-        grid-template-columns: minmax(0, 1.75fr) minmax(300px, 0.9fr);
-        gap: 20px;
+        grid-template-columns: minmax(0, 1.65fr) minmax(300px, 0.95fr);
+        gap: 18px;
         align-items: start;
       }
       .panel {
         background: var(--panel);
         border: 1px solid var(--line);
-        border-radius: 28px;
+        border-radius: 26px;
         box-shadow: var(--shadow);
       }
       .main-card {
         overflow: hidden;
-        backdrop-filter: blur(18px);
+        backdrop-filter: blur(20px);
       }
       .node-image {
         width: 100%;
         display: block;
-        aspect-ratio: 16 / 7;
+        aspect-ratio: 16 / 6;
         object-fit: cover;
         background: #e6ddd0;
       }
       .node-body {
-        padding: 28px;
+        padding: 24px;
       }
       .section-label-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
         gap: 12px;
-        margin-bottom: 18px;
+        margin-bottom: 16px;
       }
       .node-kicker {
         margin: 0;
@@ -153,30 +164,31 @@
         text-transform: uppercase;
       }
       .step-pill {
-        padding: 7px 12px;
+        padding: 8px 12px;
         border-radius: 999px;
         background: var(--accent-soft);
         color: var(--accent-strong);
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 700;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
       }
       .context {
-        font-size: 16px;
+        font-size: 15px;
         line-height: 1.6;
-        margin: 0 0 24px;
+        margin: 0 0 22px;
         color: #30403d;
+        max-width: 70ch;
       }
       .dialogue-block {
-        margin: 0 0 18px;
-        padding: 18px 20px;
-        border-radius: 22px;
-        background: linear-gradient(180deg, #ffffff 0%, #f6faf8 100%);
-        border: 1px solid rgba(24, 91, 99, 0.1);
+        margin: 0 0 20px;
+        padding: 0;
+        border-radius: 0;
+        background: transparent;
+        border: 0;
       }
       .speaker-label {
-        margin-bottom: 8px;
+        margin-bottom: 10px;
         color: var(--accent-strong);
         font-size: 12px;
         font-weight: 700;
@@ -184,11 +196,12 @@
         text-transform: uppercase;
       }
       .dialogue-quote {
-        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-        font-size: clamp(24px, 3.4vw, 34px);
-        line-height: 1.12;
+        font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+        font-size: clamp(28px, 3.6vw, 44px);
+        line-height: 1.04;
         letter-spacing: -0.04em;
-        font-weight: 720;
+        font-weight: 800;
+        max-width: 14ch;
       }
       .section-copy {
         margin-bottom: 8px;
@@ -196,10 +209,12 @@
       .action-header {
         display: grid;
         gap: 6px;
-        margin-bottom: 4px;
+        margin-bottom: 8px;
+        padding-top: 6px;
+        border-top: 1px solid rgba(71, 57, 34, 0.08);
       }
       .action-title {
-        font-size: 16px;
+        font-size: 15px;
         font-weight: 700;
       }
       .flash {
@@ -233,34 +248,34 @@
       .detail-list,
       .stack {
         display: grid;
-        gap: 12px;
+        gap: 10px;
       }
       .choice-button,
       .submit-button,
       .secondary-button {
         width: 100%;
-        border-radius: 20px;
-        padding: 18px 20px;
+        border-radius: 18px;
+        padding: 18px;
         cursor: pointer;
         transition: transform 120ms ease, box-shadow 120ms ease;
       }
       .choice-button,
       .submit-button {
-        background: linear-gradient(180deg, #ffffff 0%, #f4faf9 100%);
-        color: var(--ink);
-        box-shadow: 0 10px 24px rgba(15, 68, 74, 0.08);
+        background: linear-gradient(180deg, #184f57 0%, #103d43 100%);
+        color: #f8fcfb;
+        box-shadow: 0 14px 28px rgba(16, 61, 67, 0.18);
         text-align: left;
-        border: 1px solid rgba(24, 91, 99, 0.12);
+        border: 1px solid rgba(9, 60, 66, 0.24);
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 16px;
       }
       .secondary-button {
-        background: rgba(24, 91, 99, 0.08);
+        background: #efe5d4;
         color: var(--ink);
         width: auto;
-        border: 1px solid rgba(24, 91, 99, 0.08);
+        border: 1px solid rgba(71, 57, 34, 0.08);
         padding: 14px 18px;
         font-weight: 600;
       }
@@ -271,17 +286,31 @@
       }
       .choice-button:hover,
       .submit-button:hover {
-        border-color: rgba(24, 91, 99, 0.24);
-        box-shadow: 0 14px 28px rgba(15, 68, 74, 0.12);
+        transform: translateY(-2px);
+        box-shadow: 0 18px 34px rgba(16, 61, 67, 0.22);
+      }
+      .choice-index {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.12);
+        color: rgba(255,255,255,0.9);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
       }
       .choice-text {
+        flex: 1;
         font-size: 18px;
         line-height: 1.45;
         font-weight: 600;
       }
       .choice-arrow {
         flex: none;
-        color: var(--accent-strong);
+        color: rgba(255,255,255,0.82);
         font-size: 12px;
         font-weight: 700;
         letter-spacing: 0.1em;
@@ -325,9 +354,15 @@
       .sidebar {
         padding: 20px;
         display: grid;
-        gap: 18px;
+        gap: 14px;
         align-content: start;
         backdrop-filter: blur(18px);
+      }
+      .sidebar-section {
+        padding: 14px;
+        border-radius: 20px;
+        background: rgba(255,255,255,0.52);
+        border: 1px solid rgba(71, 57, 34, 0.06);
       }
       .stat-grid {
         display: grid;
@@ -336,19 +371,19 @@
       }
       .stat {
         padding: 14px;
-        border-radius: 18px;
-        background: rgba(250, 252, 251, 0.92);
-        border: 1px solid rgba(24, 91, 99, 0.1);
+        border-radius: 16px;
+        background: rgba(255,255,255,0.72);
+        border: 1px solid rgba(71, 57, 34, 0.08);
       }
       .stat-value {
-        font-size: 32px;
-        font-weight: 700;
+        font-size: 30px;
+        font-weight: 800;
         line-height: 1;
         margin-top: 8px;
       }
       .small {
         color: var(--muted);
-        font-size: 13px;
+        font-size: 12px;
         line-height: 1.45;
       }
       .empty {
@@ -393,7 +428,7 @@
           grid-template-columns: 1fr;
         }
         .hero {
-          flex-direction: column;
+          grid-template-columns: 1fr;
           align-items: flex-start;
         }
         .hero-actions {
@@ -409,7 +444,9 @@
         .choice-button,
         .submit-button {
           align-items: flex-start;
-          flex-direction: column;
+        }
+        .dialogue-quote {
+          max-width: none;
         }
       }
     </style>
@@ -421,6 +458,6 @@
         <h1>Loading scenario…</h1>
       </section>
     </div>
-    <script type="module" src="./app.js?v=20260410g"></script>
+    <script type="module" src="./app.js?v=20260410h"></script>
   </body>
 </html>

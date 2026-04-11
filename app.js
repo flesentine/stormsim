@@ -190,7 +190,7 @@ function render() {
         </section>
 
         <aside class="panel sidebar">
-          <section>
+          <section class="sidebar-section">
             <h3>Score</h3>
             <div class="stat-grid">
               ${Object.entries(runtime.score)
@@ -205,7 +205,7 @@ function render() {
             </div>
           </section>
 
-          <section>
+          <section class="sidebar-section">
             <h3>Evidence Found</h3>
             <div class="detail-list">
               ${
@@ -224,7 +224,7 @@ function render() {
             </div>
           </section>
 
-          <section>
+          <section class="sidebar-section">
             <h3>Behavior Tags</h3>
             <div class="detail-list">
               ${
@@ -243,7 +243,7 @@ function render() {
             </div>
           </section>
 
-          <section>
+          <section class="sidebar-section">
             <h3>Visited Nodes</h3>
             <div class="small">${escapeHtml(runtime.visited_nodes.map((nodeId) => getVisitedNodeLabel(scenario, nodeId)).join(" -> "))}</div>
           </section>
@@ -263,8 +263,9 @@ function renderStandardNode(node) {
       <div class="choice-list">
       ${(node.choices ?? [])
         .map(
-          (choice) => `
+          (choice, index) => `
             <button class="choice-button" data-action="choice" data-choice-id="${escapeHtml(choice.choice_id)}" type="button">
+              <span class="choice-index">0${index + 1}</span>
               <span class="choice-text">${escapeHtml(choice.text)}</span>
               <span class="choice-arrow">Continue</span>
             </button>`,
