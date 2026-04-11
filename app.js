@@ -84,9 +84,7 @@ function handleClick(event) {
 
     const result = selectChoice(appState.scenario, appState.runtime, choiceId);
     appState.runtime = result.nextState;
-    appState.flash = result.dialogueResponse
-      ? { tone: "neutral", lines: [result.dialogueResponse] }
-      : null;
+    appState.flash = null;
     appState.docDraft = {};
     appState.docErrors = {};
     render();
