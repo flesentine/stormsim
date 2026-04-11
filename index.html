@@ -22,7 +22,10 @@
       * { box-sizing: border-box; }
       body {
         margin: 0;
-        font-family: Georgia, "Times New Roman", serif;
+        font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
         color: var(--ink);
         background:
           radial-gradient(circle at top left, rgba(29, 92, 99, 0.12), transparent 28%),
@@ -54,16 +57,22 @@
       }
       h1 {
         margin: 0;
+        font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
         font-size: clamp(32px, 6vw, 54px);
-        line-height: 0.95;
+        line-height: 1.02;
+        letter-spacing: -0.02em;
       }
       h2 {
         margin: 0 0 14px;
+        font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
         font-size: clamp(28px, 4vw, 40px);
+        line-height: 1.08;
+        letter-spacing: -0.015em;
       }
       h3 {
         margin: 0 0 10px;
         font-size: 18px;
+        line-height: 1.2;
       }
       .hero-meta {
         display: flex;
@@ -111,7 +120,7 @@
       }
       .context {
         font-size: 18px;
-        line-height: 1.65;
+        line-height: 1.58;
         margin: 0 0 18px;
       }
       .section-copy {
@@ -222,13 +231,14 @@
         border: 1px solid var(--line);
       }
       .stat-value {
-        font-size: 26px;
+        font-size: 28px;
         font-weight: 700;
+        line-height: 1;
       }
       .small {
         color: var(--muted);
-        font-size: 14px;
-        line-height: 1.5;
+        font-size: 13px;
+        line-height: 1.45;
       }
       .empty {
         color: var(--muted);
@@ -253,6 +263,7 @@
       .audit-title {
         margin: 8px 0 10px;
         font-size: 28px;
+        line-height: 1.05;
       }
       .error-panel {
         max-width: 900px;
