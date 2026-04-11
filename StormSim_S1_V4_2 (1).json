@@ -14,6 +14,10 @@
   "image_base_path": "/images/",
   "images": [
     {
+      "image_id": "img_owner_blocking_entry.jpg",
+      "purpose": "Owner blocking entry at arrival"
+    },
+    {
       "image_id": "img_shop_floor_subtle.jpg",
       "purpose": "Subtle clue on shop floor"
     },
@@ -94,6 +98,7 @@
     {
       "node_id": "N1_arrival",
       "node_type": "dialogue",
+      "image_id": "img_owner_blocking_entry.jpg",
       "context": "You arrive at a small auto repair shop. The owner walks out quickly before you can get far into the bay area.",
       "prompt": "Owner: \"Hey\u2014what\u2019s going on? You here for something?\"",
       "choices": [
