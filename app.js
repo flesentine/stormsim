@@ -149,6 +149,7 @@ function render() {
 
   const audit = node.node_type === "audit_result" ? evaluateAudit(scenario, runtime) : null;
   const imageSrc = getNodeImageSrc(scenario, node);
+  const imageClass = getNodeImageClass(node);
 
   root.innerHTML = `
     <div class="shell">
@@ -170,7 +171,7 @@ function render() {
 
       <main class="layout">
         <section class="panel main-card">
-          ${imageSrc ? `<img class="node-image" src="${escapeHtml(imageSrc)}" alt="${escapeHtml(node.prompt)}">` : ""}
+          ${imageSrc ? `<img class="node-image ${escapeHtml(imageClass)}" src="${escapeHtml(imageSrc)}" alt="${escapeHtml(node.prompt)}">` : ""}
           <div class="node-body">
             <div class="section-label-row">
               <p class="node-kicker">${escapeHtml(node.node_type.replace("_", " "))}</p>
@@ -436,6 +437,14 @@ function getNodeImageSrc(scenario, node) {
   const imageName = rawSrc.split("/").pop();
   const resolvedName = IMAGE_ALIASES[imageName] ?? imageName;
   return `./${resolvedName}`;
+}
+
+function getNodeImageClass(node) {
+  if (node.image_id === "img_owner_blocking_entry.jpg") {
+    return "node-image-portrait";
+  }
+
+  return "";
 }
 
 function getNodeBadgeLabel(node) {
