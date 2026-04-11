@@ -69,6 +69,9 @@
         line-height: 1.08;
         letter-spacing: -0.015em;
       }
+      blockquote {
+        margin: 0;
+      }
       h3 {
         margin: 0 0 10px;
         font-size: 18px;
@@ -123,6 +126,23 @@
         line-height: 1.58;
         margin: 0 0 18px;
       }
+      .dialogue-block {
+        margin: 0 0 18px;
+      }
+      .speaker-label {
+        margin-bottom: 8px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      .dialogue-quote {
+        font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+        font-size: clamp(28px, 4vw, 40px);
+        line-height: 1.08;
+        letter-spacing: -0.015em;
+      }
       .section-copy {
         margin-bottom: 8px;
       }
@@ -143,6 +163,14 @@
       .flash.neutral {
         background: #eef4f3;
         border-color: rgba(29, 92, 99, 0.18);
+      }
+      .flash-label {
+        margin-bottom: 6px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
       }
       .choice-list,
       .audit-list,

@@ -172,7 +172,7 @@ function render() {
           ${imageSrc ? `<img class="node-image" src="${escapeHtml(imageSrc)}" alt="${escapeHtml(node.prompt)}">` : ""}
           <div class="node-body">
             <p class="node-kicker">${escapeHtml(node.node_type.replace("_", " "))}</p>
-            <h2>${escapeHtml(node.prompt)}</h2>
+            ${renderNodeHeadline(node)}
             <p class="context">${escapeHtml(node.context)}</p>
             ${appState.flash ? renderFlash(appState.flash) : ""}
             ${
@@ -262,6 +262,19 @@ function renderStandardNode(node) {
         .join("")}
     </div>
   `;
+}
+
+function renderNodeHeadline(node) {
+  if (node.node_type === "dialogue") {
+    return `
+      <div class="dialogue-block">
+        <div class="speaker-label">Owner</div>
+        <blockquote class="dialogue-quote">${escapeHtml(stripSpeakerPrefix(node.prompt))}</blockquote>
+      </div>
+    `;
+  }
+
+  return `<h2>${escapeHtml(node.prompt)}</h2>`;
 }
 
 function renderDocumentationNode(node) {
@@ -398,6 +411,7 @@ function renderAuditNode(runtime, audit) {
 function renderFlash(flash) {
   return `
     <div class="flash ${escapeHtml(flash.tone)}">
+      ${flash.tone === "neutral" ? `<div class="flash-label">Previous response</div>` : ""}
       ${flash.lines.map((line) => `<div>${escapeHtml(line)}</div>`).join("")}
     </div>
   `;
@@ -484,6 +498,10 @@ function humanizeToken(value) {
   return value
     .replace(/_/g, " ")
     .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function stripSpeakerPrefix(value) {
+  return value.replace(/^[A-Za-z ]+:\s*/, "");
 }
 
 function escapeHtml(value) {
