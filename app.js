@@ -354,7 +354,7 @@ function renderAuditNode(runtime, audit) {
         .map(
           (issue) => `
             <div class="stat">
-              <strong>${escapeHtml(issue.rule_id)} (${escapeHtml(issue.severity)})</strong>
+              <strong>${escapeHtml(getAuditIssueLabel(issue.rule_id))} (${escapeHtml(toTitleCase(issue.severity))})</strong>
               <div class="small">${escapeHtml(issue.message)}</div>
             </div>`,
         )
@@ -365,7 +365,7 @@ function renderAuditNode(runtime, audit) {
     <div class="stack">
       <div class="audit-hero tone-${escapeHtml(audit.outcome)}">
         <div class="small">Outcome</div>
-        <h3 class="audit-title">${escapeHtml(audit.outcome.replaceAll("_", " "))}</h3>
+        <h3 class="audit-title">${escapeHtml(getAuditOutcomeLabel(audit.outcome))}</h3>
         <div>${escapeHtml(audit.summary)}</div>
       </div>
 
@@ -519,6 +519,33 @@ function humanizeToken(value) {
   return value
     .replace(/_/g, " ")
     .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function getAuditOutcomeLabel(outcome) {
+  const labels = {
+    exemplary_completion: "Exemplary Completion",
+    pass_with_remediation: "Pass With Remediation",
+    soft_fail: "Soft Fail",
+    critical_fail: "Critical Fail",
+  };
+
+  return labels[outcome] ?? humanizeToken(outcome);
+}
+
+function getAuditIssueLabel(ruleId) {
+  const labels = {
+    FAIL_1: "Inspection Abandoned",
+    A1: "Missed Drain Evidence",
+    A2: "Drain Documentation Incomplete",
+    A3: "Missed Storage Issue",
+    A4: "Premature Escalation",
+  };
+
+  return labels[ruleId] ?? ruleId;
+}
+
+function toTitleCase(value) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
 function stripSpeakerPrefix(value) {
