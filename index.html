@@ -47,6 +47,12 @@
         gap: 16px;
         align-items: flex-start;
         margin-bottom: 24px;
+        padding: 4px 0;
+        transition: padding 180ms ease, gap 180ms ease;
+      }
+      .hero.hero-compact {
+        gap: 12px;
+        padding: 0;
       }
       .eyebrow {
         margin: 0 0 8px;
@@ -61,6 +67,10 @@
         font-size: clamp(32px, 6vw, 54px);
         line-height: 1.02;
         letter-spacing: -0.02em;
+        transition: font-size 180ms ease;
+      }
+      .hero.hero-compact h1 {
+        font-size: clamp(28px, 4.2vw, 38px);
       }
       h2 {
         margin: 0 0 14px;
@@ -77,11 +87,51 @@
         font-size: 18px;
         line-height: 1.2;
       }
+      .hero-subtitle {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.5;
+        max-width: 640px;
+      }
+      .hero.hero-compact .hero-subtitle {
+        display: none;
+      }
       .hero-meta {
         display: flex;
         gap: 10px;
         flex-wrap: wrap;
         margin-top: 12px;
+      }
+      .hero-actions {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .mode-toggle {
+        display: inline-flex;
+        padding: 4px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.82);
+        border: 1px solid var(--line);
+      }
+      .mode-button {
+        border: 0;
+        background: transparent;
+        color: var(--muted);
+        padding: 10px 14px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        cursor: pointer;
+      }
+      .mode-button.is-active {
+        background: var(--accent);
+        color: white;
       }
       .pill {
         padding: 8px 12px;
@@ -119,14 +169,37 @@
           linear-gradient(180deg, #e3d6bf 0%, #f4ecdf 100%);
         padding: 16px;
       }
+      .node-image-ambiguous-floor {
+        object-position: center 42%;
+      }
+      .node-image-ambiguous-storage {
+        object-position: center 35%;
+      }
       .node-body {
         padding: 26px;
       }
+      .section-label-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
       .node-kicker {
-        margin: 0 0 10px;
+        margin: 0;
         color: var(--muted);
         font-size: 13px;
         letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .step-pill {
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: var(--accent-soft);
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
         text-transform: uppercase;
       }
       .context {
@@ -136,6 +209,29 @@
       }
       .dialogue-block {
         margin: 0 0 18px;
+      }
+      .dialogue-block-compact {
+        margin-bottom: 14px;
+      }
+      .transition-dialogue {
+        margin: 0 0 14px;
+        padding: 12px 14px;
+        border-radius: 16px;
+        background: rgba(216, 235, 231, 0.72);
+        border: 1px solid rgba(29, 92, 99, 0.12);
+      }
+      .transition-label {
+        margin-bottom: 6px;
+        color: var(--accent);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      .transition-quote {
+        font-size: 15px;
+        line-height: 1.5;
+        color: #30403d;
       }
       .speaker-label {
         margin-bottom: 8px;
@@ -150,6 +246,11 @@
         font-size: clamp(28px, 4vw, 40px);
         line-height: 1.08;
         letter-spacing: -0.015em;
+      }
+      .dialogue-quote-compact {
+        font-size: clamp(22px, 3vw, 30px);
+        line-height: 1.18;
+        max-width: 22ch;
       }
       .section-copy {
         margin-bottom: 8px;
@@ -193,7 +294,7 @@
         width: 100%;
         border: 0;
         border-radius: 18px;
-        padding: 16px 18px;
+        padding: 15px 18px;
         cursor: pointer;
         transition: transform 120ms ease, box-shadow 120ms ease;
       }
@@ -203,6 +304,10 @@
         color: white;
         box-shadow: 0 12px 24px rgba(29, 92, 99, 0.18);
         text-align: left;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
       }
       .secondary-button {
         background: #efe5d8;
@@ -214,9 +319,56 @@
       .secondary-button:hover {
         transform: translateY(-1px);
       }
+      .choice-index {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        background: rgba(255,255,255,0.14);
+        font-size: 12px;
+        font-weight: 800;
+      }
+      .choice-text {
+        display: block;
+        font-size: 17px;
+        line-height: 1.35;
+      }
+      .choice-copy {
+        flex: 1;
+        display: grid;
+        gap: 6px;
+        min-width: 0;
+      }
+      .choice-subtext {
+        display: block;
+        color: rgba(255,255,255,0.78);
+        font-size: 13px;
+        line-height: 1.45;
+        font-weight: 500;
+      }
+      .choice-arrow {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        opacity: 0.88;
+      }
       .field {
         display: grid;
         gap: 8px;
+      }
+      .doc-intro {
+        padding: 14px 16px;
+        border-radius: 16px;
+        background: rgba(255,255,255,0.7);
+        border: 1px solid var(--line);
+      }
+      .doc-intro-title {
+        margin-bottom: 6px;
+        font-size: 15px;
+        font-weight: 700;
       }
       .field label {
         font-weight: 700;
@@ -250,10 +402,55 @@
         font-size: 14px;
       }
       .sidebar {
-        padding: 20px;
+        padding: 16px;
         display: grid;
-        gap: 16px;
+        gap: 12px;
         align-content: start;
+        position: sticky;
+        top: 16px;
+      }
+      .sidebar-section {
+        padding: 14px;
+        border-radius: 18px;
+        background: rgba(255,255,255,0.55);
+        border: 1px solid rgba(119, 98, 64, 0.1);
+      }
+      .sidebar-disclosure {
+        padding: 0;
+        overflow: hidden;
+      }
+      .sidebar-disclosure summary {
+        list-style: none;
+        cursor: pointer;
+        padding: 14px;
+        font-size: 14px;
+        font-weight: 700;
+      }
+      .support-card summary {
+        color: var(--accent);
+      }
+      .sidebar-disclosure summary::-webkit-details-marker {
+        display: none;
+      }
+      .sidebar-disclosure[open] summary {
+        border-bottom: 1px solid rgba(119, 98, 64, 0.1);
+      }
+      .sidebar-disclosure > :not(summary) {
+        padding: 12px 14px 14px;
+      }
+      .notebook-list {
+        display: grid;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .notebook-list.compact {
+        margin-top: 12px;
+      }
+      .notebook-entry {
+        padding: 10px 12px;
+        border-radius: 14px;
+        background: #f6f0e8;
+        border: 1px solid var(--line);
       }
       .stat-grid {
         display: grid;
@@ -317,6 +514,49 @@
         .hero {
           flex-direction: column;
         }
+        .hero-actions {
+          width: 100%;
+          justify-content: stretch;
+        }
+        .mode-toggle {
+          width: 100%;
+          justify-content: space-between;
+        }
+        .mode-button {
+          flex: 1;
+        }
+        .secondary-button {
+          width: 100%;
+        }
+        .sidebar {
+          position: static;
+          padding: 0;
+          background: transparent;
+          border: 0;
+          box-shadow: none;
+        }
+        .section-label-row {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .choice-button,
+        .submit-button {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .choice-button {
+          display: grid;
+          grid-template-columns: auto 1fr;
+        }
+        .choice-arrow {
+          grid-column: 2;
+        }
+        .node-image-portrait {
+          aspect-ratio: 3 / 4;
+        }
+        .dialogue-quote-compact {
+          max-width: none;
+        }
       }
     </style>
   </head>
@@ -327,6 +567,6 @@
         <h1>Loading scenario…</h1>
       </section>
     </div>
-    <script type="module" src="./app.js?v=20260411a"></script>
+    <script type="module" src="./app.js?v=20260413h"></script>
   </body>
 </html>

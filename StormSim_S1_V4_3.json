@@ -1,0 +1,703 @@
+{
+  "scenario_id": "S1_V4_3",
+  "title": "You're Not Coming In Here",
+  "difficulty": "Medium",
+  "skills": [
+    "Communication",
+    "Detection",
+    "Documentation",
+    "Enforcement"
+  ],
+  "estimated_minutes": 12,
+  "regional_ruleset": "default",
+  "start_node_id": "N1_arrival",
+  "image_base_path": "/images/",
+  "ui_modes": {
+    "default_mode": "play",
+    "play_mode": {
+      "show_live_score": false,
+      "show_behavior_tags": false,
+      "show_visited_nodes": false,
+      "show_raw_evidence_ids": false,
+      "show_required_evidence_checklist": false,
+      "player_notes_label": "Inspection notes",
+      "feedback_style": "Use subtle in-world reactions during play. Save detailed coaching and score breakdown for the final audit."
+    },
+    "trainer_mode": {
+      "show_live_score": true,
+      "show_behavior_tags": true,
+      "show_visited_nodes": true,
+      "show_raw_evidence_ids": false,
+      "show_required_evidence_checklist": true,
+      "player_notes_label": "Inspection notes",
+      "feedback_style": "Show rationale, score shifts, and coaching explanations after each decision."
+    }
+  },
+  "images": [
+    {
+      "image_id": "img_owner_blocking_entry.jpg",
+      "purpose": "Owner blocking entry at arrival",
+      "art_direction": "Use this at arrival to reinforce the owner's guarded stance without making the scene feel staged."
+    },
+    {
+      "image_id": "img_shop_floor_subtle.jpg",
+      "purpose": "Subtle clue on shop floor",
+      "art_direction": "Replace or recrop this image so the stain is visible but the drain is not clearly readable on first view. Keep the clue ambiguous."
+    },
+    {
+      "image_id": "img_hidden_drain.jpg",
+      "purpose": "Drain partially covered by mat",
+      "art_direction": "This is the reveal image. The drain should be readable here, not earlier."
+    },
+    {
+      "image_id": "img_oil_residue.jpg",
+      "purpose": "Confirmed residue near drain",
+      "art_direction": "Residue should be clear enough to justify documentation, but still feel like a real inspection photo rather than a staged close-up."
+    },
+    {
+      "image_id": "img_tarp_area.jpg",
+      "purpose": "Storage area that looks mostly routine at first",
+      "art_direction": "Tone down any immediate visual giveaway. The player should need to decide whether the area merits a closer look."
+    },
+    {
+      "image_id": "img_unlabeled_barrels.jpg",
+      "purpose": "Improperly stored unlabeled containers",
+      "art_direction": "Make labels, condition, and storage issue readable once the tarp is inspected."
+    }
+  ],
+  "behavior_tag_definitions": {
+    "passive_avoidance": "Player avoids a reasonable follow-up step when a clue is present.",
+    "accepted_unverified_statement": "Player relies on the owner's explanation without verifying the condition.",
+    "premature_escalation": "Player moves into accusatory or enforcement-heavy language too early.",
+    "poor_documentation": "Player documents findings too vaguely or inaccurately for solid follow-up.",
+    "missed_violation": "Player leaves a discovered issue undocumented or unresolved.",
+    "missed_followup": "Player notices a clue but fails to revisit or inspect it further."
+  },
+  "evidence_catalog": [
+    {
+      "evidence_id": "evidence_floor_stain",
+      "type": "site_condition",
+      "label": "Faint dark stain on shop floor",
+      "severity": "low",
+      "is_required_for_audit": false
+    },
+    {
+      "evidence_id": "evidence_hidden_drain",
+      "type": "site_condition",
+      "label": "Partially covered floor drain",
+      "severity": "moderate",
+      "is_required_for_audit": true
+    },
+    {
+      "evidence_id": "evidence_oil_residue",
+      "type": "site_condition",
+      "label": "Oil residue near floor drain",
+      "severity": "moderate",
+      "is_required_for_audit": true
+    },
+    {
+      "evidence_id": "evidence_unlabeled_containers",
+      "type": "storage_issue",
+      "label": "Unlabeled containers under tarp",
+      "severity": "moderate",
+      "is_required_for_audit": true
+    }
+  ],
+  "state_model_reference": {
+    "score_categories": [
+      "compliance",
+      "communication",
+      "detection",
+      "risk",
+      "conduct"
+    ],
+    "tracked_state_keys": [
+      "current_node_id",
+      "visited_nodes",
+      "score",
+      "evidence_found",
+      "behavior_tags",
+      "audit_flags",
+      "completed"
+    ],
+    "presentation_rule": "Keep behavior tags and scoring in runtime state for audit logic, but do not surface them live in play mode."
+  },
+  "nodes": [
+    {
+      "node_id": "N1_arrival",
+      "node_type": "dialogue",
+      "image_id": "img_owner_blocking_entry.jpg",
+      "context": "You arrive at a small auto repair shop and begin introducing yourself near the front of the shop. The owner comes out quickly to meet you.",
+      "prompt": "Owner: \"Hey - what's going on? You here for something?\"",
+      "choices": [
+        {
+          "choice_id": "N1_C1",
+          "text": "Introduce yourself, explain it is a routine stormwater inspection, and set a short expectation for how you will move through the shop.",
+          "dialogue_response": "Owner: \"Fine. Just don't tie us up for half the day.\"",
+          "score_delta": {
+            "communication": 10,
+            "conduct": 5
+          },
+          "behavior_tags_on_select": [],
+          "next_node": "N2_entry"
+        },
+        {
+          "choice_id": "N1_C2",
+          "text": "Introduce yourself and ask where the owner would prefer you start so you can keep the walkthrough moving.",
+          "dialogue_response": "Owner: \"Back side is easier. Just don't stop the techs.\"",
+          "score_delta": {
+            "communication": 8,
+            "conduct": 3
+          },
+          "behavior_tags_on_select": [],
+          "next_node": "N2_entry"
+        },
+        {
+          "choice_id": "N1_C3",
+          "text": "State that you need access now and begin moving in while the owner is still objecting.",
+          "dialogue_response": "Owner: \"Yeah, I heard you. I'm asking how long you're going to be in my shop.\"",
+          "score_delta": {
+            "communication": -6,
+            "conduct": -6
+          },
+          "behavior_tags_on_select": [
+            "premature_escalation"
+          ],
+          "next_node": "N2_entry_tense"
+        }
+      ]
+    },
+    {
+      "node_id": "N2_entry",
+      "node_type": "dialogue",
+      "context": "The owner lets you in, but the tone is guarded.",
+      "prompt": "Owner: \"Alright. Just don't block the bays. Last inspector spent forever talking.\"",
+      "choices": [
+        {
+          "choice_id": "N2_C1",
+          "text": "Acknowledge the concern and say you will keep the walkthrough focused.",
+          "dialogue_response": "Owner: \"Good. That's all I'm asking.\"",
+          "score_delta": {
+            "communication": 5
+          },
+          "behavior_tags_on_select": [],
+          "next_node": "N3_floor"
+        },
+        {
+          "choice_id": "N2_C2",
+          "text": "Give a quick nod and start scanning the work area without answering directly.",
+          "dialogue_response": "Owner mutters: \"Right. Same as always.\"",
+          "score_delta": {
+            "communication": -3,
+            "conduct": -2
+          },
+          "behavior_tags_on_select": [],
+          "next_node": "N3_floor"
+        }
+      ]
+    },
+    {
+      "node_id": "N2_entry_tense",
+      "node_type": "dialogue",
+      "context": "You begin the inspection with some tension already established.",
+      "prompt": "Owner: \"Just don't get in the way.\"",
+      "choices": [
+        {
+          "choice_id": "N2T_C1",
+          "text": "Acknowledge that and proceed into the shop.",
+          "score_delta": {},
+          "behavior_tags_on_select": [],
+          "next_node": "N3_floor"
+        }
+      ]
+    },
+    {
+      "node_id": "N3_floor",
+      "node_type": "inspection",
+      "image_id": "img_shop_floor_subtle.jpg",
+      "context": "The shop looks mostly clean, but you notice a faint dark stain near the back work area.",
+      "prompt": "What do you do next?",
+      "evidence_awarded_on_enter": [
+        {
+          "evidence_id": "evidence_floor_stain",
+          "source_node_id": "N3_floor"
+        }
+      ],
+      "choices": [
+        {
+          "choice_id": "N3_C1",
+          "text": "Walk over and inspect the stained area before discussing it.",
+          "score_delta": {
+            "detection": 10
+          },
+          "behavior_tags_on_select": [],
+          "next_node": "N3a_drain"
+        },
+        {
+          "choice_id": "N3_C2",
+          "text": "Ask the owner what usually happens in that area, then verify the condition yourself.",
+          "dialogue_response": "Owner: \"Mostly tire work and cleanup back there.\"",
+          "score_delta": {
+            "detection": 8,
+            "communication": 2
+          },
+          "behavior_tags_on_select": [],
+          "next_node": "N3a_drain"
+        },
+        {
+          "choice_id": "N3_C3",
+          "text": "Make a mental note, continue the sweep, and plan to circle back if something else lines up with it.",
+          "score_delta": {
+            "detection": -2
+          },
+          "behavior_tags_on_select": [],
+          "next_node": "N3_recovery_hint"
+        }
+      ]
+    },
+    {
+      "node_id": "N3_recovery_hint",
+      "node_type": "inspection",
+      "context": "A few steps later, you catch a slight petroleum odor and notice the stain seems to lead back toward a mat near the wall.",
+      "prompt": "How do you handle that new cue?",
+      "choices": [
+        {
+          "choice_id": "N3R_C1",
+          "text": "Go back and inspect the stained area now.",
+          "score_delta": {
+            "detection": 5,
+            "risk": 3
+          },
+          "behavior_tags_on_select": [],
+          "next_node": "N3a_drain"
+        },
+        {
+          "choice_id": "N3R_C2",
+          "text": "Stay on your current path and leave that area for the final walkthrough.",
+          "score_delta": {
+            "detection": -10,
+            "risk": -5
+          },
+          "behavior_tags_on_select": [
+            "missed_followup"
+          ],
+          "next_node": "N4_storage"
+        }
+      ]
+    },
+    {
+      "node_id": "N3a_drain",
+      "node_type": "inspection",
+      "image_id": "img_hidden_drain.jpg",
+      "context": "A floor drain is partially covered by a rubber mat.",
+      "prompt": "How do you handle it?",
+      "choices": [
+        {
+          "choice_id": "N3A_C1",
+          "text": "Ask a neutral question about the area, then lift or inspect the mat yourself.",
+          "dialogue_response": "Owner: \"That spot? It doesn't really get used much.\"",
+          "score_delta": {
+            "detection": 15,
+            "communication": 3,
+            "risk": 5
+          },
+          "behavior_tags_on_select": [],
+          "next_node": "N3b_violation"
+        },
+        {
+          "choice_id": "N3A_C2",
+          "text": "Photograph the setup first, then inspect the drain and ask follow-up questions after.",
+          "dialogue_response": "Owner: \"You can check it if you want, but it's a waste of time.\"",
+          "score_delta": {
+            "detection": 13,
+            "risk": 5
+          },
+          "behavior_tags_on_select": [],
+          "next_node": "N3b_violation"
+        },
+        {
+          "choice_id": "N3A_C3",
+          "text": "Ask the owner about it and move on unless another sign makes it worth revisiting.",
+          "dialogue_response": "Owner: \"That? That's nothing. Doesn't even get used.\"",
+          "score_delta": {
+            "detection": -10,
+            "risk": -5
+          },
+          "behavior_tags_on_select": [
+            "accepted_unverified_statement"
+          ],
+          "next_node": "N4_storage"
+        }
+      ]
+    },
+    {
+      "node_id": "N3b_violation",
+      "node_type": "inspection",
+      "image_id": "img_oil_residue.jpg",
+      "context": "Oil residue is visible near the drain. The condition suggests a potential illicit discharge pathway and warrants documentation.",
+      "prompt": "What do you do?",
+      "evidence_awarded_on_enter": [
+        {
+          "evidence_id": "evidence_hidden_drain",
+          "source_node_id": "N3b_violation"
+        },
+        {
+          "evidence_id": "evidence_oil_residue",
+          "source_node_id": "N3b_violation"
+        }
+      ],
+      "choices": [
+        {
+          "choice_id": "N3B_C1",
+          "text": "Document the observed condition, ask a neutral follow-up question, and continue the inspection.",
+          "dialogue_response": "Owner: \"That's from earlier - somebody spilled a little. We cleaned most of it up.\"",
+          "score_delta": {
+            "compliance": 15,
+            "risk": 10,
+            "communication": 3
+          },
+          "behavior_tags_on_select": [],
+          "next_node": "N_doc_1"
+        },
+        {
+          "choice_id": "N3B_C2",
+          "text": "Ask the owner to explain recent activity there before you decide how to document it.",
+          "dialogue_response": "Owner: \"We moved a car through and there was a spill.\"",
+          "score_delta": {
+            "communication": 2,
+            "risk": -2
+          },
+          "behavior_tags_on_select": [],
+          "next_node": "N_doc_1"
+        },
+        {
+          "choice_id": "N3B_C3",
+          "text": "Tell the owner this is a likely violation and that enforcement could follow immediately.",
+          "dialogue_response": "Owner: \"Hold on. You're jumping way ahead here.\"",
+          "score_delta": {
+            "compliance": 5,
+            "communication": -8,
+            "conduct": -8
+          },
+          "behavior_tags_on_select": [
+            "premature_escalation"
+          ],
+          "next_node": "N_doc_1"
+        }
+      ]
+    },
+    {
+      "node_id": "N_doc_1",
+      "node_type": "documentation",
+      "image_id": "img_oil_residue.jpg",
+      "context": "You need to document the condition near the drain in a way that supports follow-up.",
+      "prompt": "Complete the inspection note.",
+      "required_evidence_labels": [
+        "Partially covered floor drain",
+        "Oil residue near floor drain"
+      ],
+      "required_evidence": [
+        "evidence_hidden_drain",
+        "evidence_oil_residue"
+      ],
+      "fields": [
+        {
+          "field_id": "violation_category",
+          "label": "Violation Category",
+          "input_type": "single_select",
+          "options": [
+            "Minor housekeeping issue",
+            "Potential illicit discharge",
+            "Potential discharge concern requiring follow-up",
+            "Hazardous emergency incident"
+          ],
+          "preferred_value": "Potential illicit discharge",
+          "acceptable_values": [
+            "Potential illicit discharge",
+            "Potential discharge concern requiring follow-up"
+          ]
+        },
+        {
+          "field_id": "severity",
+          "label": "Severity",
+          "input_type": "single_select",
+          "options": [
+            "Low",
+            "Moderate",
+            "High"
+          ],
+          "preferred_value": "Moderate",
+          "acceptable_values": [
+            "Moderate"
+          ]
+        },
+        {
+          "field_id": "recommended_action",
+          "label": "Recommended Action",
+          "input_type": "single_select",
+          "options": [
+            "No action required",
+            "Document and schedule follow-up",
+            "Correct during inspection and document",
+            "Immediate emergency escalation"
+          ],
+          "preferred_value": "Document and schedule follow-up",
+          "acceptable_values": [
+            "Document and schedule follow-up",
+            "Correct during inspection and document"
+          ]
+        },
+        {
+          "field_id": "notes",
+          "label": "Inspector Notes",
+          "input_type": "text",
+          "scoring_rules": {
+            "semantic_groups": [
+              [
+                "oil",
+                "petroleum",
+                "sheen",
+                "residue"
+              ],
+              [
+                "drain",
+                "floor drain",
+                "covered drain",
+                "mat"
+              ],
+              [
+                "potential discharge",
+                "discharge pathway",
+                "follow-up",
+                "illicit discharge"
+              ]
+            ],
+            "minimum_groups_to_match": 2,
+            "partial_credit_allowed": true,
+            "case_sensitive": false
+          }
+        }
+      ],
+      "scoring": {
+        "preferred_or_acceptable_core_fields": {
+          "compliance": 20,
+          "risk": 10
+        },
+        "partial_credit": {
+          "compliance": 8
+        },
+        "otherwise": {
+          "compliance": -10
+        }
+      },
+      "behavior_tags_on_fail": [
+        "poor_documentation"
+      ],
+      "next_node": "N4_storage"
+    },
+    {
+      "node_id": "N4_storage",
+      "node_type": "inspection",
+      "image_id": "img_tarp_area.jpg",
+      "context": "In the back of the shop, a tarp covers stored items. The area could be routine storage, but its placement and condition make it worth a decision.",
+      "prompt": "What do you do?",
+      "choices": [
+        {
+          "choice_id": "N4_C1",
+          "text": "Ask what is stored there and inspect under the tarp.",
+          "dialogue_response": "Owner: \"It's just stored stuff. Go ahead.\"",
+          "score_delta": {
+            "detection": 10,
+            "risk": 5,
+            "communication": 2
+          },
+          "behavior_tags_on_select": [],
+          "next_node": "N4a_hidden"
+        },
+        {
+          "choice_id": "N4_C2",
+          "text": "Give the area a visual scan and move on unless you see leakage, labels, or obvious incompatibility.",
+          "score_delta": {
+            "detection": -6,
+            "risk": -4
+          },
+          "behavior_tags_on_select": [
+            "missed_followup"
+          ],
+          "next_node": "N5_exit"
+        },
+        {
+          "choice_id": "N4_C3",
+          "text": "Note the area for follow-up and return to it before you leave the site.",
+          "score_delta": {
+            "detection": -2
+          },
+          "behavior_tags_on_select": [],
+          "next_node": "N4_return_check"
+        }
+      ]
+    },
+    {
+      "node_id": "N4_return_check",
+      "node_type": "decision",
+      "context": "You are nearing the end of the walkthrough and still have the covered storage area noted for follow-up.",
+      "prompt": "Do you return to the tarp before closing out?",
+      "choices": [
+        {
+          "choice_id": "N4R_C1",
+          "text": "Yes - return to the tarp area and inspect it now.",
+          "score_delta": {
+            "detection": 4,
+            "risk": 2
+          },
+          "behavior_tags_on_select": [],
+          "next_node": "N4a_hidden"
+        },
+        {
+          "choice_id": "N4R_C2",
+          "text": "No - the area did not rise to the level of immediate follow-up today.",
+          "score_delta": {
+            "detection": -8,
+            "risk": -6
+          },
+          "behavior_tags_on_select": [
+            "missed_followup"
+          ],
+          "next_node": "N5_exit"
+        }
+      ]
+    },
+    {
+      "node_id": "N4a_hidden",
+      "node_type": "inspection",
+      "image_id": "img_unlabeled_barrels.jpg",
+      "context": "Under the tarp you find unlabeled barrels and containers stored in a way that raises compliance concerns.",
+      "prompt": "How do you handle this discovery?",
+      "evidence_awarded_on_enter": [
+        {
+          "evidence_id": "evidence_unlabeled_containers",
+          "source_node_id": "N4a_hidden"
+        }
+      ],
+      "choices": [
+        {
+          "choice_id": "N4A_C1",
+          "text": "Document the storage issue and include it in your closeout summary.",
+          "score_delta": {
+            "compliance": 15,
+            "risk": 10
+          },
+          "behavior_tags_on_select": [],
+          "next_node": "N5_exit"
+        },
+        {
+          "choice_id": "N4A_C2",
+          "text": "Ask a few questions first, then document the issue because the condition still needs follow-up.",
+          "dialogue_response": "Owner: \"Those are old fluids waiting on pickup.\"",
+          "score_delta": {
+            "compliance": 12,
+            "communication": 3,
+            "risk": 8
+          },
+          "behavior_tags_on_select": [],
+          "next_node": "N5_exit"
+        },
+        {
+          "choice_id": "N4A_C3",
+          "text": "Leave it undocumented for now because you are not fully sure what is in the containers.",
+          "score_delta": {
+            "compliance": -15,
+            "risk": -10
+          },
+          "behavior_tags_on_select": [
+            "missed_violation"
+          ],
+          "next_node": "N5_exit"
+        }
+      ]
+    },
+    {
+      "node_id": "N5_exit",
+      "node_type": "decision",
+      "context": "You complete the site walk and prepare to wrap up.",
+      "prompt": "Choose your exit approach.",
+      "choices": [
+        {
+          "choice_id": "N5_C1",
+          "text": "Summarize what you observed, explain the next steps, and close out professionally.",
+          "dialogue_response": "Owner: \"Alright. I get what you're saying.\"",
+          "score_delta": {
+            "communication": 6,
+            "conduct": 6
+          },
+          "behavior_tags_on_select": [],
+          "next_node": "N6_audit"
+        },
+        {
+          "choice_id": "N5_C2",
+          "text": "Give a brief summary of today's documented items and tell the owner the full write-up will follow.",
+          "dialogue_response": "Owner: \"Fine. Send whatever you need to send.\"",
+          "score_delta": {
+            "communication": 2,
+            "conduct": 2
+          },
+          "behavior_tags_on_select": [],
+          "next_node": "N6_audit"
+        },
+        {
+          "choice_id": "N5_C3",
+          "text": "End the visit without discussing observations until the report is finalized.",
+          "dialogue_response": "Owner: \"So that's it?\"",
+          "score_delta": {
+            "communication": -5,
+            "conduct": -4
+          },
+          "behavior_tags_on_select": [],
+          "next_node": "N6_audit"
+        }
+      ]
+    },
+    {
+      "node_id": "N6_audit",
+      "node_type": "audit_result",
+      "context": "Post-inspection audit review.",
+      "prompt": "System audit summary",
+      "audit_rules": [
+        {
+          "rule_id": "A1",
+          "condition": "missing evidence_hidden_drain or missing evidence_oil_residue",
+          "message": "You did not fully verify and document the drain-related pollution indicator."
+        },
+        {
+          "rule_id": "A2",
+          "condition": "documentation incomplete or too vague for drain finding",
+          "message": "You saw the condition, but your documentation would weaken follow-up and enforcement."
+        },
+        {
+          "rule_id": "A3",
+          "condition": "missing evidence_unlabeled_containers",
+          "message": "You did not inspect or revisit a storage area that warranted follow-up."
+        },
+        {
+          "rule_id": "A4",
+          "condition": "behavior_tags includes premature_escalation",
+          "message": "Your tone created avoidable resistance and increased complaint risk."
+        }
+      ],
+      "completion_logic": {
+        "critical_fail_conditions": [
+          "missing all required audit evidence"
+        ],
+        "pass_with_remediation_conditions": [
+          "overall positive score but one or more concerning behavior tags or missed evidence"
+        ],
+        "exemplary_completion_conditions": [
+          "all required evidence found",
+          "documentation at preferred or acceptable level",
+          "no critical behavior tags"
+        ]
+      },
+      "next_node": null
+    }
+  ]
+}

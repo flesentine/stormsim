@@ -1,3 +1,5 @@
+import { evaluateDocumentationSubmission } from "./documentationEvaluator.js";
+
 const DEFAULT_SCORE = {
   compliance: 0,
   communication: 0,
@@ -87,6 +89,8 @@ export function selectChoice(scenario, state, choiceId) {
       nextState,
       dialogueResponse: choice.dialogue_response,
       nextNode: null,
+      scoreDelta: choice.score_delta ?? {},
+      behaviorTagsApplied: choice.behavior_tags_on_select ?? [],
     };
   }
 
@@ -106,6 +110,8 @@ export function selectChoice(scenario, state, choiceId) {
     nextState,
     dialogueResponse: choice.dialogue_response,
     nextNode,
+    scoreDelta: choice.score_delta ?? {},
+    behaviorTagsApplied: choice.behavior_tags_on_select ?? [],
   };
 }
 
@@ -117,26 +123,33 @@ export function submitDocumentation(scenario, state, nodeId, values) {
   }
 
   let nextState = cloneRuntimeState(state);
-
-  const missingRequiredEvidence =
-    node.required_evidence?.filter(
-      (requiredId) =>
-        !nextState.evidence_found.some((item) => item.evidence_id === requiredId),
-    ) ?? [];
-
-  const allCoreFieldsCorrect = areDocumentationCoreFieldsCorrect(node, values);
+  const evaluation = evaluateDocumentationSubmission(
+    node,
+    values,
+    nextState.evidence_found.map((item) => item.evidence_id),
+  );
 
   nextState.documentation_results[node.node_id] = {
     values: { ...values },
-    allCoreFieldsCorrect,
-    missingRequiredEvidence,
+    allCoreFieldsCorrect: evaluation.completionLevel === "preferred_or_acceptable",
+    missingRequiredEvidence: evaluation.missingRequiredEvidence,
+    fieldErrors: evaluation.fieldErrors,
+    completionLevel: evaluation.completionLevel,
+    fieldAssessments: evaluation.fieldAssessments,
+    partialCreditAwarded: evaluation.partialCreditAwarded,
   };
 
   const scoring = node.scoring ?? {};
-  if (allCoreFieldsCorrect && missingRequiredEvidence.length === 0) {
+  if (evaluation.completionLevel === "preferred_or_acceptable") {
     nextState.score = applyScoreDelta(
       nextState.score,
-      scoring.all_core_fields_correct,
+      scoring.preferred_or_acceptable_core_fields,
+    );
+  } else if (evaluation.completionLevel === "partial_credit") {
+    nextState.score = applyScoreDelta(nextState.score, scoring.partial_credit);
+    nextState.behavior_tags = mergeUniqueStrings(
+      nextState.behavior_tags,
+      node.behavior_tags_on_fail ?? [],
     );
   } else {
     nextState.score = applyScoreDelta(nextState.score, scoring.otherwise);
@@ -151,8 +164,11 @@ export function submitDocumentation(scenario, state, nodeId, values) {
     return {
       nextState,
       nextNode: null,
-      allCoreFieldsCorrect,
-      missingRequiredEvidence,
+      allCoreFieldsCorrect: evaluation.completionLevel === "preferred_or_acceptable",
+      missingRequiredEvidence: evaluation.missingRequiredEvidence,
+      fieldErrors: evaluation.fieldErrors,
+      completionLevel: evaluation.completionLevel,
+      partialCreditAwarded: evaluation.partialCreditAwarded,
     };
   }
 
@@ -171,8 +187,11 @@ export function submitDocumentation(scenario, state, nodeId, values) {
   return {
     nextState,
     nextNode,
-    allCoreFieldsCorrect,
-    missingRequiredEvidence,
+    allCoreFieldsCorrect: evaluation.completionLevel === "preferred_or_acceptable",
+    missingRequiredEvidence: evaluation.missingRequiredEvidence,
+    fieldErrors: evaluation.fieldErrors,
+    completionLevel: evaluation.completionLevel,
+    partialCreditAwarded: evaluation.partialCreditAwarded,
   };
 }
 
@@ -218,29 +237,6 @@ export function addEvidence(scenario, state, awarded) {
   };
 }
 
-export function areDocumentationCoreFieldsCorrect(node, values) {
-  for (const field of node.fields) {
-    if (field.input_type === "single_select" && field.correct_value) {
-      if ((values[field.field_id] ?? "") !== field.correct_value) {
-        return false;
-      }
-    }
-
-    if (field.input_type === "text" && field.scoring_rules?.must_include_any?.length) {
-      const submitted = (values[field.field_id] ?? "").toLowerCase();
-      const matchesKeyword = field.scoring_rules.must_include_any.some((keyword) =>
-        submitted.includes(keyword.toLowerCase()),
-      );
-
-      if (!matchesKeyword) {
-        return false;
-      }
-    }
-  }
-
-  return true;
-}
-
 export function getCurrentNode(scenario, state) {
   return getNodeById(scenario, state.current_node_id);
 }
@@ -253,7 +249,7 @@ export function cloneRuntimeState(state) {
     evidence_found: [...state.evidence_found],
     behavior_tags: [...state.behavior_tags],
     audit_flags: [...state.audit_flags],
-    documentation_results: { ...state.documentation_results },
+    documentation_results: structuredClone(state.documentation_results),
     selected_choice_ids: [...state.selected_choice_ids],
   };
 }

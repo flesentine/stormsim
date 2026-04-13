@@ -16,6 +16,9 @@ export function validateScenario(raw) {
   assert(raw.scenario_id, "Missing scenario_id");
   assert(raw.start_node_id, "Missing start_node_id");
   assert(Array.isArray(raw.nodes), "Nodes must be an array");
+  if (raw.ui_modes) {
+    assert(raw.ui_modes.default_mode, "ui_modes missing default_mode");
+  }
 
   const nodeIds = new Set();
 
@@ -85,6 +88,20 @@ function validateDocumentationNode(node) {
 
     if (field.input_type === "single_select" && !Array.isArray(field.options)) {
       throw new Error(`Field ${field.field_id} must have options array`);
+    }
+
+    if (field.input_type === "single_select" && field.acceptable_values) {
+      assert(
+        Array.isArray(field.acceptable_values),
+        `Field ${field.field_id} acceptable_values must be an array`,
+      );
+    }
+
+    if (field.input_type === "text" && field.scoring_rules?.semantic_groups) {
+      assert(
+        Array.isArray(field.scoring_rules.semantic_groups),
+        `Field ${field.field_id} semantic_groups must be an array`,
+      );
     }
   }
 }
