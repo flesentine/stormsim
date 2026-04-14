@@ -50,6 +50,9 @@
         padding: 4px 0;
         transition: padding 180ms ease, gap 180ms ease;
       }
+      .hero > div:first-child {
+        max-width: 760px;
+      }
       .hero.hero-compact {
         gap: 12px;
         padding: 0;
@@ -64,8 +67,8 @@
       h1 {
         margin: 0;
         font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
-        font-size: clamp(32px, 6vw, 54px);
-        line-height: 1.02;
+        font-size: clamp(28px, 4.8vw, 44px);
+        line-height: 1.04;
         letter-spacing: -0.02em;
         transition: font-size 180ms ease;
       }
@@ -91,11 +94,11 @@
         line-height: 1.2;
       }
       .hero-subtitle {
-        margin: 8px 0 0;
+        margin: 6px 0 0;
         color: var(--muted);
         font-size: 15px;
         line-height: 1.5;
-        max-width: 640px;
+        max-width: 52ch;
       }
       .hero.hero-compact .hero-subtitle {
         display: none;

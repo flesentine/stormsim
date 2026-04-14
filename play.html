@@ -61,6 +61,9 @@
           linear-gradient(135deg, rgba(255,255,255,0.72), rgba(255,250,242,0.92));
         transition: padding 180ms ease, gap 180ms ease;
       }
+      .hero > div:first-child {
+        max-width: 760px;
+      }
       .hero.hero-compact {
         padding: 14px 18px;
         gap: 14px;
@@ -76,11 +79,10 @@
       h1 {
         margin: 0;
         font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
-        font-size: clamp(26px, 3.2vw, 34px);
-        line-height: 1.02;
+        font-size: clamp(24px, 2.8vw, 32px);
+        line-height: 1.06;
         letter-spacing: -0.05em;
         font-weight: 800;
-        max-width: 720px;
         transition: font-size 180ms ease;
       }
       .hero.hero-compact h1 {
@@ -109,11 +111,11 @@
         color: var(--muted);
       }
       .hero-subtitle {
-        margin: 8px 0 0;
+        margin: 6px 0 0;
         color: var(--muted);
         font-size: 14px;
         line-height: 1.5;
-        max-width: 640px;
+        max-width: 52ch;
       }
       .hero.hero-compact .hero-subtitle {
         display: none;
